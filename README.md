@@ -9,7 +9,7 @@ Get Followers app direct access!
 $atok = "3973759919.c6384ef.038912a7b15347419da7c8c68352fc66"; // Access token
 $id = "3973759919"; // ID
 $mid = "12761362"; // MID</pre></div>
-<p>Anda harus merubahnya, untuk cara mendapatkan datanya anda bisa mendapatkannya dengan cara apapun, baik itu Reserver Enginnering atau yang lainnya.</p>
+<p>Anda harus merubahnya, untuk cara mendapatkan datanya anda bisa mendapatkannya dengan cara apapun, baik itu reverse engineering, proxy atau yang lainnya.</p>
 <h2>Examples</h2>
 <h3>Add Coins</h3>
 <div class="highlight highlight-text-html-php"><pre>$dat = getContents($id, $session);
