@@ -1,11 +1,17 @@
 <?php
 $kke = "d&L:>DEtw]7oS.a}F_gRyhoL8j]jC=!F"; // Private key, important!
 
-$session = "kIYOTwHI8lmr8qtzzgi6hzpju1a31qmxkwym89ua"; // Session
-$atok = "3973759919.c6384ef.038912a7b15347419da7c8c68352fc66"; // Access token
-$id = "3973759919"; // ID
-$mid = "12761362"; // MID
+$session = "xxx"; // Session
+$atok = "xxx"; // Access token
+$id = "xxx"; // ID
+$mid = "xxx"; // MID
 
+$dat = getContents($id, $session);
+    foreach($dat['data']['followings'] as $gg){
+        $fid = $gg['fid'];
+        $f = follow($fid, $session, $atok);
+        echo $f['data']['credits'] . "\n";
+    }
 
 function getContents($id, $session){
     global $mid;
@@ -40,14 +46,39 @@ function signup($token){
     $sessionid = $result['data']['main_account']['sesn_id'];
     $accesstoken = $result['data']['auth_info']['access_token'];
     $id = $result['data']['auth_info']['user']['id'];
+    $mid = $result['data']['main_account']['mid'];
     
-    return $sessionid . ":" . $accesstoken . ":" . $id;
+    return $sessionid . ":" . $accesstoken . ":" . $id . ":" . $mid;
     
+}
+function validate($sesskey){
+    global $mid;
+    $content = '{"assets":{"basic":[]},"app_id":302,"mid":"$mid","updt_tm":2147483647,"sesn_id":"'.$sesskey.'"}';
+    $postdata = http_build_query(
+        array(
+            'content' => $content,
+            'signature' => getsig($content),
+            'sig_kv' => 1
+        )
+    );
+    
+    $opts = array('http' =>
+        array(
+            'method'  => 'POST',
+            'header'  => 'Content-type: application/x-www-form-urlencoded',
+            'content' => $postdata
+        )
+    );
+    
+    $context  = stream_context_create($opts);
+    $result = @file_get_contents('https://socialstar.api-alliance.com/follows/getfollowers/account/validate', false, $context);
+    
+    $x = json_decode($result, true);
+    return $x;
 }
 function update($seskey){
     global $mid;
     $content = '{"sesn_id":"'.$seskey.'","app_id":302,"mid":"'.$mid.'"}';
-    echo $content;
     $postdata = http_build_query(
         array(
             'content' => $content,
@@ -68,7 +99,7 @@ function update($seskey){
     $result = @file_get_contents('https://socialstar.api-alliance.com/follows/getfollowers/associate/query', false, $context);
     
     $x = json_decode($result, true);
-    var_dump($x);
+    return $x;
 }
 function orderchcek($id, $session){
     global $mid;
