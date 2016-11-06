@@ -55,7 +55,7 @@ class getFollowers {
 		return $data;
 	}
 	public function startTask($fid){
-		$content = '{"associate_id":"'.$this->id.'","app_id":302,"following_result":{"fid":"'.$fid.'","status":"success"},"mid":"13123057","sesn_id":"'.$this->session.'"}';
+		$content = '{"associate_id":"'.$this->id.'","app_id":302,"following_result":{"fid":"'.$fid.'","status":"success"},"mid":"'.$this->mid.'","sesn_id":"'.$this->session.'"}';
 		$base = "https://socialstar.api-alliance.com/follows/getfollowers/follow";
 		$data = $this->http($base, $this->buildQuery($content));
 		return $data;
