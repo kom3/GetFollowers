@@ -1,21 +1,24 @@
 <?php
 
 $get = new getFollowers();
-$get->id = "15448877";
-$get->atok = "15448877.fsa58dd.c22651d64afc49809f0f508898a24b86";
-$get->session = "";
-$get->mid = "1549999";
+$get->id = "1695549788";
+$get->atok = "1695549788.fsa58dd.c22651d64afc49809f0f508898a24b86";
+$get->session = "kKIMODAvgjv8emeuo09dkcf7py8wnxpncsvwb3qs";
+$get->mid = "13158635";
 
 /*
-
 Example : 
 
-echo $get->signup("6020d5fe89b94cb0bd9dd389d618fc8f");
+echo $get->signup("1695549788"); // Gak perlu login"an cuk, masukin ID aja, AWAS DITIKUNG, AMBIL ID YANG SANGAT RAHASIA!!!!!! GAK TANGGUNG JAWAB OWE! :)
+
+// BTW KALIAN GAK BUTUH ACCESS TOKEN, TAPI BIARIN AJA GANTI ID 1695549788 DENGAN ID IG KAMU AJA, KESANANYA BIARIN
+
 foreach($get->getContents()['data']['followings'] as $dfid){
 	$fid = $dfid['fid'];
 	$action = $get->startTask($fid);
 	echo $action['data']['credits'] . "<br />";
 }
+
 */
 
 class getFollowers {
@@ -38,37 +41,44 @@ class getFollowers {
 
 	}
 	public function getContents(){
-		$content = '{"app_id":302,"associate_id":"'.$this->id.'","mid":"'.$this->mid.'","fetch_count":2,"sesn_id":"'.$this->session.'"}';
-		$base = 'https://socialstar.api-alliance.com/follows/getfollowers/fetch?content='.$content.'&signature='.HASH::hmac($content).'&sig_kv=3';
+		$content = '{"associate_id":"'.$this->id.'","app_id":302,"mid":"'.$this->mid.'","fetch_count":2,"sesn_id":"'.$this->session.'"}';
+		$base = 'https://ssafollow.api-alliance.com/follows/getfollowers/fetch?content='.$content.'&signature='.HASH::hmac($content).'&sig_kv=3';
 		return json_decode(@file_get_contents($base), true);
 	}
 	public function orderCheck(){
 	    $content = '{"sesn_id":"'.$this->session.'","app_id":302,"associate_id":"'.$this->id.'","mid":"'.$this->mid.'"}';
-	    $base = 'https://socialstar.api-alliance.com/follows/getfollowers/task/status?content='.$content.'&signature='.HASH::hmac($content).'&sig_kv=3';
+	    $base = 'https://ssafollow.api-alliance.com/follows/getfollowers/task/status?content='.$content.'&signature='.HASH::hmac($content).'&sig_kv=3';
 	    return json_decode(@file_get_contents($base), true);
 	}
 	public function addOrder($total, $targetid, $targetUsername){
 		$content = '{"credits":'.($total*2).',"quantity":'.$total.',"tobefollow":{"fid":"'.$targetid.'","portrait":"https:\/\/scontent.cdninstagram.com\/t51.2885-19\/11906329_960233084022564_1448528159_a.jpg","username":"'.$targetUsername.'","private":0},"app_id":302,"associate_id":"'.$this->id.'","mid":"'.$this->mid.'","sesn_id":"'.$this->session.'"}';
-		$base = "https://socialstar.api-alliance.com/follows/getfollowers/task/submit";
+		$base = "https://ssafollow.api-alliance.com/follows/getfollowers/task/submit";
 
 		$data = $this->http($base, $this->buildQuery($content));
 		return $data;
 	}
 	public function startTask($fid){
 		$content = '{"associate_id":"'.$this->id.'","app_id":302,"following_result":{"fid":"'.$fid.'","status":"success"},"mid":"'.$this->mid.'","sesn_id":"'.$this->session.'"}';
-		$base = "https://socialstar.api-alliance.com/follows/getfollowers/follow";
+		$base = "https://ssafollow.api-alliance.com/follows/getfollowers/follow";
 		$data = $this->http($base, $this->buildQuery($content));
 		return $data;
 	}
-	public function signup($token){
-		$content = '{"assets":{"basic":[]},"account_info":{"refrl":"google"},"tp_info":{"auth_code":"'.$token.'","acnt_typ":"instagram","client_verified":0,"auth_client_id":"c6384efb582f486980a4bc34debee3fa"},"app_id":302,"device_info":{"dvc_id":"'.UUID::get(true).'","enbl_ftur":"EnabledFeatures001Test","app_vrsn":"1.0.3","dvc_tkn":"","dvc_typ":"android","app_grp":"nuunnnnnnnnnnnnnnu","tst_usr":-1,"restrct_usr":false,"locl":"ID","dvc_os_vrsn":"4.4.2","dvc_tzone":25200}}';
+	public function updateRelay(){
+		$content = '{"assets":{"basic":["credits"]},"sesn_id":"'.$this->session.'","app_id":302,"mid":"'.$this->mid.'"}';
+		$base = "https://ssafollow.api-alliance.com/follows/ssafollows/asset/v1/query";
+		$data = $this->http($base, $this->buildQuery($content));
+		return $data;
+	}
+	public function signup($id_ig){
+		$content = '{"assets":{"path":"\/asset\/v1\/query","basic":[]},"get_followers":{"unfollowed":0},"account_info":{"refrl":"Amazon"},"tp_info":{"acnt_typ":"instagram","sid":"'.$id_ig.'","client_verified":1},"app_id":302,"device_info":{"dvc_id":"'.UUID::get(true).'","enbl_ftur":"EnabledFeatures001Test","app_vrsn":"1.0.8","dvc_tkn":"APA91bFxd-6IdRSysefy5caXeMEVk4EHUX2Jpgildi7bTyULZmDPmmrfRIrCfD2tWcuQ3Qc7HdeQS_G-w2NvfWxUmJ5Jw7GYUCf48sg5vRqs_oMFQy-5c6EWPC2Z7JRU3mjHzJX5tJu-","dvc_typ":"android","usr_seg":"","app_grp":"nuunnnnnnnnnnnnnnu","dvc_lctn_set":0,"restrct_usr":false,"locl":"in_ID","dvc_os_vrsn":"4.4.2","dvc_tzone":25200},"associates":{}}';
 
-		$base = "https://socialstar.api-alliance.com/follows/getfollowers/account/signup";
+		$base = "https://ssafollow.api-alliance.com/follows/ssafollows/account/v1/signup";
 
 		$data = $this->http($base, $this->buildQuery($content));
+
 		$sessionid = $data['data']['main_account']['sesn_id'];
-	    $accesstoken = $data['data']['auth_info']['access_token'];
-	    $id = $data['data']['auth_info']['user']['id'];
+	    $accesstoken = $data['data']['associates'][0]['access_token'];
+	    $id = $data['data']['associates'][0]['id'];
 	    $mid = $data['data']['main_account']['mid'];
 	    
 	    return $sessionid . ":" . $accesstoken . ":" . $id . ":" . $mid;
