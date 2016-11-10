@@ -1,29 +1,29 @@
 <?php
 
 $get = new getFollowers();
-$get->id = "1695549788";
-$get->atok = "1695549788.fsa58dd.c22651d64afc49809f0f508898a24b86";
-$get->session = "kKIMODAvgjv8emeuo09dkcf7py8wnxpncsvwb3qs";
-$get->mid = "13158635";
+$get->id = "981061448"; // ID INSTAGRAMMU DISINI ! GAKUSAH SETTING" YANG LAIN CUK :)
 
-/*
-Example : 
+$get->signup(); // Ini register, biarin aja jangan dihapus karena penting!
 
-echo $get->signup("1695549788"); // Gak perlu login"an cuk, masukin ID aja, AWAS DITIKUNG, AMBIL ID YANG SANGAT RAHASIA!!!!!! GAK TANGGUNG JAWAB OWE! :)
-
-// BTW KALIAN GAK BUTUH ACCESS TOKEN, TAPI BIARIN AJA GANTI ID 1695549788 DENGAN ID IG KAMU AJA, KESANANYA BIARIN
-
-foreach($get->getContents()['data']['followings'] as $dfid){
-	$fid = $dfid['fid'];
-	$action = $get->startTask($fid);
-	echo $action['data']['credits'] . "<br />";
+// Ini fungsi ambil coinnya, kreasikan!
+while(true){
+	$x = $get->getContents();
+	if(!empty($x['data']['followings'])){
+		foreach($x['data']['followings'] as $dfid){
+			$fid = $dfid['fid'];
+			$action = $get->startTask($fid);
+			echo $action['data']['credits'] . " ";
+		}
+	} else {
+		$dat = $get->signup($get->id);
+		$z = explode(":", $dat);
+		$get->session = $z[0];
+		echo "Session updated! ";
+	}
 }
 
-*/
-
 class getFollowers {
-
-
+	
 	/*
 		Developer : Galih Akbar Moerbayaksa
 		Team : Kome-Ine Creative
@@ -37,8 +37,24 @@ class getFollowers {
 	public $atok;
 	public $id;
 
-	public function __construct(){
-
+	public function __construct($id = false){
+		if($id && is_numeric($id)){
+			$this->id = $id;
+		}
+		return $this;
+	}
+	public function addAccount($new_id){
+		$time = date("U") * 1000;
+		$content = '{"associate_id":"'.$new_id.'","app_id":302,"client_time":"'.$time.'","mid":"'.$this->mid.'","type":"instagram","sesn_id":"'.$this->session.'","signature":"'.HASH::hmac("302|4140957785|1478764336424|3a25e63c", "ad6edf5e4112445f95d9f94fcbd74e85").'"}';
+		$base = 'https://ssafollow.api-alliance.com/follows/ssafollows/associate/client_add';
+		$data = $this->http($base, $this->buildQuery($content));
+		return $data;
+	}
+	public function addLikes($media_id, $target_id, $total){
+		$content = '{"media_url":{"standard":"http:\/\/scontent-sit4-1.cdninstagram.com\/t51.2885-15\/e35\/14733179_644578785722220_7549668795372011520_n.jpg","low":"http:\/\/scontent-sit4-1.cdninstagram.com\/t51.2885-15\/s320x320\/e35\/14733179_644578785722220_7549668795372011520_n.jpg","thumbnail":"http:\/\/scontent-sit4-1.cdninstagram.com\/t51.2885-15\/s150x150\/e35\/14733179_644578785722220_7549668795372011520_n.jpg"},"media_id":"'.$media_id.'","credits":'.($total).',"quantity":'.$total.',"app_id":302,"mid":"'.$this->mid.'","sesn_id":"'.$this->session.'","usermeta":{"uid":"'.$target_id.'","fullname":"galihs123","username":"galihs123"}}';
+		$base = 'https://ssafollow.api-alliance.com/follows/getfollowers/like/submit';
+		$data = $this->http($base, $this->buildQuery($content));
+		return $data;
 	}
 	public function getContents(){
 		$content = '{"associate_id":"'.$this->id.'","app_id":302,"mid":"'.$this->mid.'","fetch_count":2,"sesn_id":"'.$this->session.'"}';
@@ -69,19 +85,27 @@ class getFollowers {
 		$data = $this->http($base, $this->buildQuery($content));
 		return $data;
 	}
-	public function signup($id_ig){
+	public function signup($id_ig = false){
+		if(!empty($this->id)){
+			$id_ig = $this->id;
+		}
 		$content = '{"assets":{"path":"\/asset\/v1\/query","basic":[]},"get_followers":{"unfollowed":0},"account_info":{"refrl":"Amazon"},"tp_info":{"acnt_typ":"instagram","sid":"'.$id_ig.'","client_verified":1},"app_id":302,"device_info":{"dvc_id":"'.UUID::get(true).'","enbl_ftur":"EnabledFeatures001Test","app_vrsn":"1.0.8","dvc_tkn":"APA91bFxd-6IdRSysefy5caXeMEVk4EHUX2Jpgildi7bTyULZmDPmmrfRIrCfD2tWcuQ3Qc7HdeQS_G-w2NvfWxUmJ5Jw7GYUCf48sg5vRqs_oMFQy-5c6EWPC2Z7JRU3mjHzJX5tJu-","dvc_typ":"android","usr_seg":"","app_grp":"nuunnnnnnnnnnnnnnu","dvc_lctn_set":0,"restrct_usr":false,"locl":"in_ID","dvc_os_vrsn":"4.4.2","dvc_tzone":25200},"associates":{}}';
 
 		$base = "https://ssafollow.api-alliance.com/follows/ssafollows/account/v1/signup";
 
 		$data = $this->http($base, $this->buildQuery($content));
-
 		$sessionid = $data['data']['main_account']['sesn_id'];
 	    $accesstoken = $data['data']['associates'][0]['access_token'];
 	    $id = $data['data']['associates'][0]['id'];
 	    $mid = $data['data']['main_account']['mid'];
-	    
-	    return $sessionid . ":" . $accesstoken . ":" . $id . ":" . $mid;
+	    if(!empty($this->id)){
+			$this->mid = $mid;
+			$this->atok = $accesstoken;
+			$this->session = $sessionid;
+			return $this;
+		} else {
+			return $sessionid . ":" . $accesstoken . ":" . $id . ":" . $mid;
+		}
 	}
 
 	private function buildQuery($content){
@@ -114,8 +138,9 @@ class HASH {
 	
 	public $key = 'GU}ST90CA*>AsZyX;+81BtVR:!k $Q`6';
 
-	static function hmac($data){
+	static function hmac($data, $key = false){
 		$h = new HASH();
+		if(!empty($key)) $h->key = $key;
 		return hash_hmac('sha256', $data, $h->key);
 	}
 
