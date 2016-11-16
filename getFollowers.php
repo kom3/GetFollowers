@@ -1,7 +1,7 @@
 <?php
 
 $get = new getFollowers();
-$get->id = "981061448"; // ID INSTAGRAMMU DISINI ! GAKUSAH SETTING" YANG LAIN CUK :)
+$get->id = "145457888"; // ID INSTAGRAMMU DISINI ! GAKUSAH SETTING" YANG LAIN CUK :)
 
 $get->signup(); // Ini register, biarin aja jangan dihapus karena penting!
 
@@ -12,12 +12,10 @@ while(true){
 		foreach($x['data']['followings'] as $dfid){
 			$fid = $dfid['fid'];
 			$action = $get->startTask($fid);
-			echo $action['data']['credits'] . " ";
+            echo $action['data']['credits'] . " ";
 		}
 	} else {
-		$dat = $get->signup($get->id);
-		$z = explode(":", $dat);
-		$get->session = $z[0];
+		$dat = $get->signup();
 		echo "Session updated! ";
 	}
 }
